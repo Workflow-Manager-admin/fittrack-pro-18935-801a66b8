@@ -1,82 +1,220 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-/**
- * Dashboard Screen - shows daily activity stats: steps, workout minutes, calories.
- * PUBLIC_INTERFACE
- */
+// Color palette for FitTrack Pro
+const colors = {
+  primary: '#4CAF50',
+  secondary: '#FFFFFF',
+  accent: '#FF9800',
+  textDark: '#222',
+  infoCard: '#FFF8E1',
+  divider: '#F0F0F0',
+};
+
+// ---------------- Dashboard Screen ----------------
+// PUBLIC_INTERFACE
 function DashboardScreen() {
+  const todayStats = {
+    steps: 7500,
+    workout: 45,
+    calories: 1800,
+  };
+
   return (
     <SafeAreaView style={styles.screenContainer}>
-      <View style={styles.section}>
-        <Text style={styles.heading}>Today's Activity</Text>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>7,500</Text>
-            <Text style={styles.statLabel}>Steps</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>45</Text>
-            <Text style={styles.statLabel}>Workout (min)</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>1,800</Text>
-            <Text style={styles.statLabel}>Calories</Text>
+      <ScrollView>
+        <View style={styles.sectionCardPrimary}>
+          <Text style={styles.sectionTitle}>Today's Activity</Text>
+          <View style={styles.statRow}>
+            <StatBox label="Steps" value={todayStats.steps} accent />
+            <StatBox label="Workout (min)" value={todayStats.workout} />
+            <StatBox label="Calories" value={todayStats.calories} />
           </View>
         </View>
-      </View>
-      <View style={styles.tipSection}>
-        <Text style={styles.tipTitle}>Personalized Recommendation</Text>
-        <Text style={styles.tipText}>Complete 30 more minutes of activity to reach your daily goal!</Text>
-      </View>
+        <View style={styles.sectionCardAccent}>
+          <Text style={styles.cardHeading}>Personalized Recommendation</Text>
+          <Text style={styles.recommendationText}>
+            Complete 30 more minutes of activity to reach your daily goal!
+          </Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-/**
- * Log Screen - allows user to log workouts and meals.
- * PUBLIC_INTERFACE
- */
+// UI component for stats
+function StatBox({ label, value, accent = false }) {
+  return (
+    <View style={styles.statBox}>
+      <Text style={[styles.statValue, accent && { color: colors.accent }]}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+// ---------------- Activity Logging Screen ----------------
+// PUBLIC_INTERFACE
 function LogScreen() {
+  // Local state for forms
+  const [workout, setWorkout] = useState('');
+  const [calories, setCalories] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const onLog = () => {
+    if (!workout && !calories) {
+      setSuccess('');
+      return;
+    }
+    // Pretend logging happens here
+    setSuccess('Entry logged successfully!');
+    setWorkout('');
+    setCalories('');
+    setTimeout(() => setSuccess(''), 2000);
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.secondary }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <SafeAreaView style={styles.screenContainer}>
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <Text style={styles.sectionTitle}>Log Activity</Text>
+          <View style={styles.formSection}>
+            <Text style={styles.formLabel}>Workout (e.g. "Running: 30min")</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Type workout activity..."
+              value={workout}
+              onChangeText={setWorkout}
+              placeholderTextColor="#888"
+            />
+            <Text style={styles.formLabel}>Meal Calories</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter calories consumed..."
+              keyboardType="numeric"
+              value={calories}
+              onChangeText={setCalories}
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                (!workout && !calories) && { opacity: 0.5 }
+              ]}
+              onPress={onLog}
+              disabled={!workout && !calories}
+            >
+              <Text style={styles.buttonText}>Log Entry</Text>
+            </TouchableOpacity>
+            {success ? <Text style={styles.successMessage}>{success}</Text> : null}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
+  );
+}
+
+// ---------------- Recommendations Screen ----------------
+// PUBLIC_INTERFACE
+function RecommendationsScreen() {
+  // In the real app, recommendations would be personalized and dynamic
+  const recs = [
+    {
+      title: "Hydration Reminder",
+      text: "Drink at least 8 cups of water today.",
+    },
+    {
+      title: "Variety in Workouts",
+      text: "Try a new activity this week, such as cycling or yoga.",
+    },
+    {
+      title: "Rest & Recovery",
+      text: "Ensure you get 7-8 hours of sleep for muscle recovery.",
+    },
+    {
+      title: "Balanced Diet",
+      text: "Include fresh vegetables and lean protein in today’s meals.",
+    }
+  ];
+
   return (
     <SafeAreaView style={styles.screenContainer}>
-      <Text style={styles.heading}>Log Workout / Meal</Text>
-      <View style={styles.logSection}>
-        <Text style={styles.logText}>[Form inputs for logging workout and meals appear here.]</Text>
-      </View>
+      <ScrollView>
+        <Text style={styles.sectionTitle}>Recommendations</Text>
+        {recs.map((rec, idx) => (
+          <View key={idx} style={styles.sectionCardAccentAlt}>
+            <Text style={styles.cardHeadingAlt}>{rec.title}</Text>
+            <Text style={styles.cardTextAlt}>{rec.text}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-/**
- * Progress Screen - shows user's fitness progress reports.
- * PUBLIC_INTERFACE
- */
+// ---------------- Progress Screen ----------------
+// PUBLIC_INTERFACE
 function ProgressScreen() {
   return (
     <SafeAreaView style={styles.screenContainer}>
-      <Text style={styles.heading}>Progress Reports</Text>
-      <View style={styles.progressSection}>
-        <Text style={styles.progressText}>[Charts and history of activity, workouts, and calorie intake appear here.]</Text>
-      </View>
+      <ScrollView>
+        <Text style={styles.sectionTitle}>Progress Reports</Text>
+        <View style={styles.sectionCardPrimary}>
+          <Text style={styles.progressSubtitle}>Your progress will appear here!</Text>
+          <Text style={styles.progressSmall}>
+            [Charts and historical records UI to be implemented. For now, review daily steps, workouts, and calories over the week.]
+          </Text>
+          <View style={styles.progressBarContainer}>
+            <Text style={styles.progressBarLabel}>Steps\nMon–Sun</Text>
+            <ProgressBar percent={0.75} color={colors.accent} />
+          </View>
+          <View style={styles.progressBarContainer}>
+            <Text style={styles.progressBarLabel}>Workout Minutes</Text>
+            <ProgressBar percent={0.60} color={colors.primary} />
+          </View>
+          <View style={styles.progressBarContainer}>
+            <Text style={styles.progressBarLabel}>Calories (Target: 2000/day)</Text>
+            <ProgressBar percent={0.90} color={colors.accent} />
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
+// Simple visual progress bar
+function ProgressBar({ percent, color }) {
+  return (
+    <View style={styles.progressBarBg}>
+      <View style={[styles.progressBarFg, { width: `${Math.round(percent * 100)}%`, backgroundColor: color }]} />
+    </View>
+  );
+}
+
+// ---------------- Tab Navigation Setup ----------------
 const Tab = createBottomTabNavigator();
 
-/**
- * App Entry - main FitTrack Pro container with themed bottom tab navigation.
- * PUBLIC_INTERFACE
- */
+// PUBLIC_INTERFACE
 export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="Dashboard"
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: colors.accent,
           tabBarInactiveTintColor: colors.primary,
@@ -86,112 +224,188 @@ export default function App() {
             height: 60,
           },
           tabBarLabelStyle: {
-            fontSize: 14,
             fontWeight: '700',
+            fontSize: 12,
+            marginBottom: 6,
           },
-        }}
+        })}
       >
         <Tab.Screen name="Dashboard" component={DashboardScreen} />
         <Tab.Screen name="Log" component={LogScreen} />
+        <Tab.Screen name="Recommendations" component={RecommendationsScreen} />
         <Tab.Screen name="Progress" component={ProgressScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
-// Theme colors for branding and consistency
-const colors = {
-  primary: '#4CAF50',
-  secondary: '#FFFFFF',
-  accent: '#FF9800',
-};
-
+// ---------------- Styles ----------------
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingTop: 32,
-    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingHorizontal: 18,
   },
-  section: {
+  sectionCardPrimary: {
     backgroundColor: colors.primary,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 20,
-    marginBottom: 16,
+    marginVertical: 12,
     alignItems: 'center',
   },
-  heading: {
-    color: colors.secondary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  sectionCardAccent: {
+    backgroundColor: colors.infoCard,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 18,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    alignItems: 'center',
+  },
+  sectionCardAccentAlt: {
+    backgroundColor: colors.infoCard,
+    borderRadius: 10,
+    padding: 16,
+    marginVertical: 7,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  sectionTitle: {
+    fontSize: 25,
+    fontWeight: '800',
+    color: colors.primary,
+    alignSelf: 'center',
+    marginBottom: 7,
+    marginTop: 6,
+  },
+  cardHeading: {
+    color: colors.accent,
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 4,
     alignSelf: 'center',
   },
-  statsRow: {
+  cardHeadingAlt: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  cardTextAlt: {
+    color: colors.textDark,
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  recommendationText: {
+    color: colors.primary,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 10,
+    marginTop: 8,
   },
   statBox: {
-    alignItems: 'center',
     flex: 1,
+    alignItems: 'center',
   },
-  statNumber: {
-    color: colors.accent,
+  statValue: {
     fontSize: 22,
     fontWeight: 'bold',
+    color: colors.secondary,
   },
   statLabel: {
+    fontSize: 13,
     color: colors.secondary,
-    fontSize: 14,
-    marginTop: 4,
+    marginTop: 2,
   },
-  tipSection: {
-    backgroundColor: '#FFF8E1',
-    borderRadius: 10,
+  formSection: {
+    backgroundColor: colors.secondary,
+    borderRadius: 15,
+    borderColor: colors.primary,
+    borderWidth: 1.25,
     padding: 16,
-    marginTop: 12,
-    borderColor: colors.accent,
-    borderWidth: 1,
-    alignItems: 'center',
+    marginVertical: 14,
+    elevation: 1,
   },
-  tipTitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  tipText: {
-    color: colors.primary,
+  formLabel: {
     fontSize: 15,
-    textAlign: 'center',
+    color: colors.primary,
+    marginBottom: 5,
+    marginTop: 9,
+    fontWeight: '500',
   },
-  logSection: {
+  input: {
+    backgroundColor: '#F8F8F8',
+    borderColor: colors.divider,
+    borderWidth: 1,
+    borderRadius: 7,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
+    fontSize: 15,
+    marginBottom: 8,
+    color: colors.textDark,
+  },
+  button: {
     backgroundColor: colors.primary,
-    borderRadius: 10,
-    padding: 18,
-    marginTop: 18,
-    justifyContent: 'center',
+    paddingVertical: 13,
+    borderRadius: 8,
     alignItems: 'center',
-    minHeight: 100,
+    marginTop: 11,
   },
-  logText: {
+  buttonText: {
     color: colors.secondary,
     fontSize: 16,
+    fontWeight: 'bold',
   },
-  progressSection: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    padding: 18,
-    marginTop: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 100,
+  successMessage: {
+    color: colors.accent,
+    marginTop: 9,
+    alignSelf: 'center',
+    fontWeight: '600',
+    fontSize: 15,
   },
-  progressText: {
+  progressSubtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: colors.secondary,
-    fontSize: 16,
+    alignSelf: 'center',
+    marginBottom: 2,
+  },
+  progressSmall: {
+    color: colors.infoCard,
+    fontSize: 13,
+    fontStyle: 'italic',
+    marginVertical: 7,
+    alignSelf: 'center',
     textAlign: 'center',
+  },
+  progressBarContainer: {
+    marginTop: 13,
+    marginBottom: 4,
+    width: '100%',
+    alignItems: 'flex-start',
+  },
+  progressBarLabel: {
+    color: colors.secondary,
+    fontWeight: '500',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  progressBarBg: {
+    width: '100%',
+    height: 17,
+    borderRadius: 8,
+    backgroundColor: colors.divider,
+    marginBottom: 6,
+    overflow: 'hidden',
+  },
+  progressBarFg: {
+    height: '100%',
+    borderRadius: 8,
   },
 });
