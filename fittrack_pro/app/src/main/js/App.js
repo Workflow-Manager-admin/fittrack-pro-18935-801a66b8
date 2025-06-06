@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// PUBLIC_INTERFACE
+/**
+ * Dashboard Screen - shows daily activity stats: steps, workout minutes, calories.
+ * PUBLIC_INTERFACE
+ */
 function DashboardScreen() {
-  /** Main dashboard showing daily activity stats */
   return (
     <SafeAreaView style={styles.screenContainer}>
       <View style={styles.section}>
@@ -20,36 +22,44 @@ function DashboardScreen() {
             <Text style={styles.statLabel}>Workout (min)</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>1800</Text>
-            <Text style={styles.statLabel}>Cals</Text>
+            <Text style={styles.statNumber}>1,800</Text>
+            <Text style={styles.statLabel}>Calories</Text>
           </View>
         </View>
+      </View>
+      <View style={styles.tipSection}>
+        <Text style={styles.tipTitle}>Personalized Recommendation</Text>
+        <Text style={styles.tipText}>Complete 30 more minutes of activity to reach your daily goal!</Text>
       </View>
     </SafeAreaView>
   );
 }
 
-// PUBLIC_INTERFACE
+/**
+ * Log Screen - allows user to log workouts and meals.
+ * PUBLIC_INTERFACE
+ */
 function LogScreen() {
-  /** Logging screen for workouts and meal entries */
   return (
     <SafeAreaView style={styles.screenContainer}>
       <Text style={styles.heading}>Log Workout / Meal</Text>
       <View style={styles.logSection}>
-        <Text style={styles.logText}>[Workout and meal inputs go here]</Text>
+        <Text style={styles.logText}>[Form inputs for logging workout and meals appear here.]</Text>
       </View>
     </SafeAreaView>
   );
 }
 
-// PUBLIC_INTERFACE
+/**
+ * Progress Screen - shows user's fitness progress reports.
+ * PUBLIC_INTERFACE
+ */
 function ProgressScreen() {
-  /** Progress reporting screen */
   return (
     <SafeAreaView style={styles.screenContainer}>
       <Text style={styles.heading}>Progress Reports</Text>
       <View style={styles.progressSection}>
-        <Text style={styles.progressText}>[Progress charts and summaries go here]</Text>
+        <Text style={styles.progressText}>[Charts and history of activity, workouts, and calorie intake appear here.]</Text>
       </View>
     </SafeAreaView>
   );
@@ -57,9 +67,11 @@ function ProgressScreen() {
 
 const Tab = createBottomTabNavigator();
 
-// PUBLIC_INTERFACE
+/**
+ * App Entry - main FitTrack Pro container with themed bottom tab navigation.
+ * PUBLIC_INTERFACE
+ */
 export default function App() {
-  /** Main FitTrack Pro container with navigation structure */
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -71,6 +83,11 @@ export default function App() {
           tabBarStyle: {
             backgroundColor: colors.secondary,
             borderTopColor: colors.primary,
+            height: 60,
+          },
+          tabBarLabelStyle: {
+            fontSize: 14,
+            fontWeight: '700',
           },
         }}
       >
@@ -82,14 +99,13 @@ export default function App() {
   );
 }
 
-// Theme colors used throughout the app
+// Theme colors for branding and consistency
 const colors = {
   primary: '#4CAF50',
   secondary: '#FFFFFF',
   accent: '#FF9800',
 };
 
-// App-wide styles using the color scheme
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
@@ -109,11 +125,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    alignSelf: 'center',
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    marginTop: 10,
   },
   statBox: {
     alignItems: 'center',
@@ -127,6 +145,27 @@ const styles = StyleSheet.create({
   statLabel: {
     color: colors.secondary,
     fontSize: 14,
+    marginTop: 4,
+  },
+  tipSection: {
+    backgroundColor: '#FFF8E1',
+    borderRadius: 10,
+    padding: 16,
+    marginTop: 12,
+    borderColor: colors.accent,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  tipTitle: {
+    color: colors.accent,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  tipText: {
+    color: colors.primary,
+    fontSize: 15,
+    textAlign: 'center',
   },
   logSection: {
     backgroundColor: colors.primary,
@@ -135,6 +174,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 100,
   },
   logText: {
     color: colors.secondary,
@@ -147,9 +187,11 @@ const styles = StyleSheet.create({
     marginTop: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 100,
   },
   progressText: {
     color: colors.secondary,
     fontSize: 16,
+    textAlign: 'center',
   },
 });
